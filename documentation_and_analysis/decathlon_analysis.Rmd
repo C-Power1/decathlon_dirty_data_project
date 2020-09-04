@@ -1,0 +1,166 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Loading libraries 
+
+```{r}
+library(tidyverse)
+library(here)
+```
+
+```{r}
+here::here()
+```
+
+Reading in clean data
+
+```{r}
+clean_decathlon <- read_csv(here("clean_data", "cleaned_decathlon_data.csv"))
+
+```
+
+Viewing clean data
+
+```{r}
+view(clean_decathlon)
+
+dim(clean_decathlon)
+
+```
+
+Finding which athlete had the longest long jump in the data
+
+```{r}
+longest_long_jump <- clean_decathlon %>%
+  filter(event == "long_jump") %>% #filter out all events that are not long_jump
+  arrange(desc(distance_or_time)) %>% # order the distance_or_time values in descending order
+  head(1) # return the top row which has the highest value
+
+longest_long_jump
+
+```
+
+Clay is the athlete with the longest long jump distance
+
+
+Finding the average 100m time for each competition
+
+```{r}
+avg_100m_time <- clean_decathlon %>%
+  filter(event == "100m") %>% #filter out all events that are not 100m
+  group_by(competition) %>% #group the data by competition - decastar and olympics
+  summarise(avg_100m = round(mean(distance_or_time),
+                             digits = 1)) 
+# create new column calculating mean (average) of all 100m distance_or_time values & round to one decimal place
+
+avg_100m_time
+
+```
+
+Average 100m time for Decastar is 11.2 and for the Olympics its 10.9 - rounded to one decimal place as this is standard in athletics
+
+
+Finding the highest total points in dataset (across both competitions)
+
+```{r}
+highest_points_total <- clean_decathlon %>%
+  select(athlete, points) %>% # focus on athlete and points columns
+  arrange(desc(points)) %>% # organise them in order of points (descending)
+  head(1) #return the top row which has the highest value
+
+highest_points_total
+
+```
+
+Sebrle had the highest points total across both competitions - 8893
+
+
+The top 3 shot-put scores (distance) for each competition
+
+```{r}
+shot_put_scores_top_3 <- clean_decathlon %>%
+  filter(event == "shot_put") %>% ##filter out all events that are not shot put
+  group_by(competition) %>% # group the data by competition - decastar and olympics
+  filter(between(rank, 1, 3)) # only focus on the rows of the top 3 competitors (ranked between 1 and 3)
+
+shot_put_scores_top_3
+
+
+```
+
+shot_put_scores_top_3:
+
+decastar - 14.83, 14.26, 14.77
+olympics - 16.36, 15.23, 15.93
+
+
+Returning the average points for competitors above and below 50s
+
+```{r}
+avg_400m_group_above_and_below_50s <- clean_decathlon %>%
+  filter(event == "400m") %>% #filter out all events that are not shot put
+  mutate(above_50s = distance_or_time > 50) %>% #create a new logical column that specifies if the score is above 50
+  group_by(above_50s) %>% # group by above_50s column
+  summarise(avg_points = round(mean(points),
+                             digits = 2)) # calculate average points for those above 50s(true) and below 50s (false), rounded to 2 decimal places
+  
+
+avg_400m_group_above_and_below_50s
+
+
+```
+
+average points for those below 50s was 8120.48 and above 50s was 7727.17
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
